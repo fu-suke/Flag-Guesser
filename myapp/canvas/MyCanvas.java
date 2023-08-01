@@ -1,25 +1,30 @@
 package myapp.canvas;
 
-// MyDrawingのインスタンスに対して位置や色、大きさの変更などの様々な操作が必要になってきます。 
-// ところが、これらの操作はMyCanvasクラス上に実装する必要があるため、もともとのMyCanvasクラスの役割である、「描画」という機能を大きく超えてしまいます。
-
-// そこで、MyDrawingインスタンスに対する操作の部分をMediatorクラスとして分離し、クラスごとの機能を明確化します。 
-//Mediatorクラスでは、MyDrawingを(非)選択状態にしたり、選択されたMyDrawingを保持したりする機能も持ちます。
-
+import java.awt.image.BufferedImage;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
 import myapp.common.Observer;
 import myapp.shapes.MyDrawing;
+import myapp.states.StateManager;
 
 public class MyCanvas extends JPanel implements Observer {
     private Mediator mediator;
+    private MyMouseAdapter mouseAdapter;
+    private StateManager stateManager;
 
     public MyCanvas() {
         mediator = new Mediator(this);
         setBackground(Color.white);
         addKeyListener(new MyKeyAdapter());
+    }
+
+    public void createMouseAdapter(StateManager stateManager) {
+        this.stateManager = stateManager;
+        mouseAdapter = new MyMouseAdapter(stateManager);
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
     }
 
     public Mediator getMediator() {
@@ -28,7 +33,12 @@ public class MyCanvas extends JPanel implements Observer {
 
     public void paint(Graphics g) {
         super.paint(g);
+        // 図形
         for (MyDrawing d : mediator.getDrawings()) {
+            d.draw(g);
+        }
+        // 補助線
+        for (MyDrawing d : mediator.getGuideLines()) {
             d.draw(g);
         }
     }
@@ -46,29 +56,46 @@ public class MyCanvas extends JPanel implements Observer {
         requestFocusInWindow();
     }
 
+    // キャンバスの内容を画像として返す
+    public BufferedImage getCanvasContent() {
+        int width = getWidth();
+        int height = getHeight();
+        // TYPE_INT_RGBは、sRGBカラーモデルを使用したRGB形式
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.getGraphics();
+        this.paint(g);
+        g.dispose();
+        return image;
+    }
+
     class MyKeyAdapter extends KeyAdapter {
 
         public void keyPressed(KeyEvent e) {
+            mediator.getStateManager().setSelectState();
             // "Del"キーが押されたときの処理
             if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                System.out.println("Del key pressed");
-                mediator.removeSelectedDrawing();
+                mediator.delete();
+                stateManager.notifyObservers();
             }
             // "Ctrl+C"
             if (e.getKeyCode() == KeyEvent.VK_C && e.isControlDown()) {
-                System.out.println("Ctrl+C pressed");
                 mediator.copy();
+                stateManager.notifyObservers();
             }
             // "Ctrl+V"
             if (e.getKeyCode() == KeyEvent.VK_V && e.isControlDown()) {
-                mediator.paste(10, 10);
-
-                System.out.println("Ctrl+V pressed");
+                mediator.paste(mouseAdapter.getLastX(), mouseAdapter.getLastY());
+                stateManager.notifyObservers();
             }
             // "Ctrl+X"
             if (e.getKeyCode() == KeyEvent.VK_X && e.isControlDown()) {
                 mediator.cut();
-                System.out.println("Ctrl+X pressed");
+                stateManager.notifyObservers();
+            }
+            // "Ctrl+A"
+            if (e.getKeyCode() == KeyEvent.VK_A && e.isControlDown()) {
+                mediator.selectAll();
+                stateManager.notifyObservers();
             }
         }
     }

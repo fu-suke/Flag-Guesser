@@ -10,6 +10,6 @@ public class DiagonalPolygonState extends DrawState {
 
     public void mouseDown(int x, int y) {
         currentDrawing = new MyDiagonalPolygon(x, y, 0, 0, 6);
-        initializeDrawing();
+        setProperties();
     }
 }

@@ -8,8 +8,7 @@ public class RectState extends DrawState {
     }
 
     public void mouseDown(int x, int y) {
-        // System.out.println("RectState.mouseDown");
         currentDrawing = new MyRectangle(x, y, 0, 0); // 大きさがゼロのインスタンスを作る
-        initializeDrawing();
+        setProperties();
     }
 }

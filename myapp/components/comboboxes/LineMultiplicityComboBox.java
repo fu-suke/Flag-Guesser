@@ -11,6 +11,7 @@ public class LineMultiplicityComboBox extends JComboBox<Integer> {
     StateManager stateManager;
 
     public LineMultiplicityComboBox(StateManager stateManager) {
+        this.setPrototypeDisplayValue(100); // 幅の設定("100"という文字が収まるサイズになる)
         // 1から10までの値を持つコンボボックスを作成
         Integer[] numbers = new Integer[10];
         for (int i = 0; i < 10; i++) {

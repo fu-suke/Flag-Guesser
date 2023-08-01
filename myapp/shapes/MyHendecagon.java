@@ -4,8 +4,11 @@ import java.awt.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyHendecagon extends MyDrawing {
+    final int N = 11;
+
     // テスト用
     public MyHendecagon() {
         super(); // デフォルト値を代入
@@ -22,14 +25,14 @@ public class MyHendecagon extends MyDrawing {
 
     @Override
     void paint(Graphics2D g, int x, int y, int w, int h, Color lineColor, Color fillColor) {
-        // 11角形の頂点の座標を計算する
+        // N角形の頂点の座標を計算する
         List<int[]> points = calculatePolygonPoints(x, y, w, h);
         int[] xPoints = points.get(0);
         int[] yPoints = points.get(1);
 
         // 線スタイルを設定する
         g.setStroke(getStroke());
-        // 11角形の中を塗りつぶす
+        // N角形の中を塗りつぶす
         Polygon p = new Polygon(xPoints, yPoints, xPoints.length);
         g.setColor(fillColor);
         g.fill(p);
@@ -39,12 +42,12 @@ public class MyHendecagon extends MyDrawing {
 
     // 頂点を計算する関数
     private List<int[]> calculatePolygonPoints(int x, int y, int w, int h) {
-        int[] xPoints = new int[11];
-        int[] yPoints = new int[11];
+        int[] xPoints = new int[N];
+        int[] yPoints = new int[N];
 
-        for (int i = 0; i < 11; i++) {
-            xPoints[i] = (int) (w * Math.cos(-2 * Math.PI * i / 11) / 2) + x + w / 2;
-            yPoints[i] = (int) (w * Math.sin(-2 * Math.PI * i / 11) / 2) + y + h / 2;
+        for (int i = 0; i < N; i++) {
+            xPoints[i] = (int) (w * Math.cos(-2 * Math.PI * i / N) / 2) + x + w / 2;
+            yPoints[i] = (int) (h * Math.sin(-2 * Math.PI * i / N) / 2) + y + h / 2;
         }
 
         List<int[]> points = new ArrayList<>();
@@ -64,7 +67,26 @@ public class MyHendecagon extends MyDrawing {
         List<int[]> points = calculatePolygonPoints(x, y, w, h);
         int[] xPoints = points.get(0);
         int[] yPoints = points.get(1);
-        region = new Polygon(xPoints, yPoints, 11);
+        region = new Polygon(xPoints, yPoints, N);
+    }
+
+    @Override
+    public int[] getEdge() {
+        int[] params = getAdjustedParams();
+        int x = params[0];
+        int y = params[1];
+        int w = params[2];
+        int h = params[3];
+        int[] xpoints = calculatePolygonPoints(x, y, w, h).get(0);
+        int[] ypoints = calculatePolygonPoints(x, y, w, h).get(1);
+
+        int upperleftX = Arrays.stream(xpoints).min().getAsInt();
+        int upperleftY = Arrays.stream(ypoints).min().getAsInt();
+        int lowerrightX = Arrays.stream(xpoints).max().getAsInt();
+        int lowerrightY = Arrays.stream(ypoints).max().getAsInt();
+
+        int[] edge = { upperleftX, upperleftY, lowerrightX, lowerrightY };
+        return edge;
     }
 
 }

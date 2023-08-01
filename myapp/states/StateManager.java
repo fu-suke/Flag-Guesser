@@ -9,16 +9,19 @@ import myapp.common.Observer;
 
 public class StateManager implements Observable {
     private State state;
+    private State lastState; // 1つ前のStateを保存する
     private MyCanvas canvas;
     private boolean hasShadow;
     private BasicStroke stroke;
     private int lineMultiplicity;
     private Color lineColor;
     private Color fillColor;
+    private int alpha = 255;
     private List<Observer> observers = new ArrayList<>(); // 観察対象のリスト
 
     public StateManager(MyCanvas canvas) {
-        state = new RectState(this); // 最初はRectStateで固定
+        state = new RectState(this);
+        lastState = state;
         this.canvas = canvas;
         hasShadow = false;
         stroke = new BasicStroke();
@@ -27,7 +30,20 @@ public class StateManager implements Observable {
         fillColor = Color.WHITE;
     }
 
-    // 色のアクセッサ
+    public void setBackColor(Color color) {
+        this.canvas.setBackground(color);
+        notifyObservers();
+    }
+
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+        notifyObservers();
+    }
+
+    public int getAlpha() {
+        return this.alpha;
+    }
+
     public void setLineColor(Color lineColor) {
         this.lineColor = lineColor;
         notifyObservers();
@@ -47,8 +63,18 @@ public class StateManager implements Observable {
     }
 
     public void setState(State state) {
+        lastState = this.state;
         this.state = state;
         System.out.println("State changed to " + state);
+        getCanvas().getMediator().clearSelectedDrawings();
+        notifyObservers();
+    }
+
+    public void restoreState() {
+        this.state = lastState;
+        getCanvas().getMediator().clearSelectedDrawings();
+        System.out.println("State recovered to " + state);
+        notifyObservers();
     }
 
     public void sethasShadow(boolean b) {
@@ -88,17 +114,29 @@ public class StateManager implements Observable {
 
     public void mouseDown(int x, int y) {
         state.mouseDown(x, y);
-        canvas.repaint();
+        notifyObservers();
     }
 
     public void mouseUp(int x, int y) {
         state.mouseUp(x, y);
-        canvas.repaint();
+        notifyObservers();
     }
 
     public void mouseDrag(int x, int y) {
         state.mouseDrag(x, y);
-        canvas.repaint();
+        notifyObservers();
+    }
+
+    public boolean isSelectState() {
+        return state instanceof SelectState;
+    }
+
+    public void setSelectState() {
+        // SelectStateの二重上書きによるlastStateの消失を防ぐ
+        if (!isSelectState()) {
+            setState(new SelectState(this));
+        }
+        notifyObservers();
     }
 
     @Override

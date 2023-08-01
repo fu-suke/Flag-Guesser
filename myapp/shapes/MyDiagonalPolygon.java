@@ -3,6 +3,7 @@ package myapp.shapes;
 import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // 正n角形の頂点を全て結んだ図形を描画するクラス
 public class MyDiagonalPolygon extends MyDrawing {
@@ -53,7 +54,7 @@ public class MyDiagonalPolygon extends MyDrawing {
 
         for (int i = 0; i < vertex; i++) {
             xPoints[i] = (int) (w * Math.cos(-2 * Math.PI * i / vertex) / 2) + x + w / 2;
-            yPoints[i] = (int) (w * Math.sin(-2 * Math.PI * i / vertex) / 2) + y + h / 2;
+            yPoints[i] = (int) (h * Math.sin(-2 * Math.PI * i / vertex) / 2) + y + h / 2;
         }
 
         List<int[]> points = new ArrayList<>();
@@ -74,5 +75,24 @@ public class MyDiagonalPolygon extends MyDrawing {
         int[] xPoints = points.get(0);
         int[] yPoints = points.get(1);
         region = new Polygon(xPoints, yPoints, vertex);
+    }
+
+    @Override
+    public int[] getEdge() {
+        int[] params = getAdjustedParams();
+        int x = params[0];
+        int y = params[1];
+        int w = params[2];
+        int h = params[3];
+        int[] xpoints = calculatePolygonPoints(x, y, w, h).get(0);
+        int[] ypoints = calculatePolygonPoints(x, y, w, h).get(1);
+
+        int upperleftX = Arrays.stream(xpoints).min().getAsInt();
+        int upperleftY = Arrays.stream(ypoints).min().getAsInt();
+        int lowerrightX = Arrays.stream(xpoints).max().getAsInt();
+        int lowerrightY = Arrays.stream(ypoints).max().getAsInt();
+
+        int[] edge = { upperleftX, upperleftY, lowerrightX, lowerrightY };
+        return edge;
     }
 }

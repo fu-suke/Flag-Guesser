@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import myapp.canvas.Mediator;
-import myapp.shapes.MyDrawing;
 import myapp.states.StateManager;
 
 public class LinePatternComboBox extends JComboBox<StrokeString> {
@@ -13,19 +12,21 @@ public class LinePatternComboBox extends JComboBox<StrokeString> {
 
     public LinePatternComboBox(StateManager stateManager) {
         this.stateManager = stateManager;
-        StrokeString solid = new StrokeString("─────", new BasicStroke(1.0f));
-        StrokeString pattern1 = new StrokeString("- - - - - - - - - ", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+        StrokeString solid = new StrokeString("───", new BasicStroke(1.0f));
+        StrokeString pattern1 = new StrokeString("- - - - -", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, new float[] { 5.0f, 5.0f }, 0.0f));
-        StrokeString pattern2 = new StrokeString("─ ─ ─ ─", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+        StrokeString pattern2 = new StrokeString("─  ─", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f }, 0.0f));
-        StrokeString pattern3 = new StrokeString("─・─・─", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+        StrokeString pattern3 = new StrokeString("─・─", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f, 2.0f, 10.0f }, 0.0f));
 
         this.addItem(solid);
-        this.addItem(pattern1);
         this.addItem(pattern2);
+        this.addItem(pattern1);
         this.addItem(pattern3);
         // 線種を追加したい場合はここに追加する
+
+        this.setPrototypeDisplayValue(solid);// 一番長い文字列を基準に幅を決める
 
         // アクションリスナーを追加
         this.addActionListener(new ActionListener() {

@@ -10,6 +10,6 @@ public class OvalState extends DrawState {
 
     public void mouseDown(int x, int y) {
         currentDrawing = new MyOval(x, y, 0, 0); // 大きさがゼロのインスタンスを作る
-        initializeDrawing();
+        setProperties();
     }
 }

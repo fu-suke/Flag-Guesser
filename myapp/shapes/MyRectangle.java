@@ -33,4 +33,15 @@ public class MyRectangle extends MyDrawing {
         int h = params[3];
         region = new Rectangle(x, y, w, h);
     }
+
+    @Override
+    public int[] getEdge() {
+        int[] params = getAdjustedParams();
+        int x = params[0];
+        int y = params[1];
+        int w = params[2];
+        int h = params[3];
+        int[] edge = { x, y, x + w, y + h };
+        return edge;
+    }
 }

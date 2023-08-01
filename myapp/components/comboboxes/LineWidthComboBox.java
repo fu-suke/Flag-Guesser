@@ -5,19 +5,19 @@ import java.awt.*;
 import java.awt.event.*;
 
 import myapp.states.StateManager;
-import myapp.shapes.MyDrawing;
 import myapp.canvas.Mediator;
 
-public class LineWidthComboBox extends JComboBox<Float> {
+public class LineWidthComboBox extends JComboBox<Integer> {
     StateManager stateManager;
 
     public LineWidthComboBox(StateManager stateManager) {
+        this.setPrototypeDisplayValue(100); // 幅の設定("100"という文字が収まるサイズになる)
         // 1から10までの値を持つコンボボックスを作成
-        Float[] numbers = new Float[10];
+        Integer[] numbers = new Integer[10];
         for (int i = 0; i < 10; i++) {
-            numbers[i] = (float) i + 1;
+            numbers[i] = (Integer) i + 1;
         }
-        for (Float number : numbers) {
+        for (Integer number : numbers) {
             this.addItem(number);
         }
 
@@ -25,8 +25,8 @@ public class LineWidthComboBox extends JComboBox<Float> {
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox<Float> comboBox = (JComboBox<Float>) e.getSource();
-                Float lineWidth = (Float) comboBox.getSelectedItem(); // 選択された値を取得
+                JComboBox<Integer> comboBox = (JComboBox<Integer>) e.getSource();
+                Integer lineWidth = (Integer) comboBox.getSelectedItem(); // 選択された値を取得
                 BasicStroke currentStroke = stateManager.getStroke();
                 // 新しいストロークをセットする
                 BasicStroke newStroke = new BasicStroke(

@@ -1,10 +1,7 @@
 package myapp.states;
 
-import myapp.shapes.MyDrawing;
-
 public abstract class State {
     StateManager stateManager;
-    MyDrawing currentDrawing;
 
     public State(StateManager stateManager) {
         this.stateManager = stateManager;
