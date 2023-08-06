@@ -22,8 +22,8 @@ public class Guesser {
         loadImagesFromDirectory();
         // あらかじめ決めたサイズにリサイズしておく
         List<BufferedImage> resizedImages = getResizedImages(images, WIDTH, HEIGHT);
-        // 輝度のベクトルに変換しておく
-        imageVectors = extractBrightnessVector(resizedImages);
+        // ベクトルに変換しておく
+        imageVectors = convert2Vector(resizedImages);
     }
 
     // 引数imageと最も類似した画像を返す
@@ -32,8 +32,8 @@ public class Guesser {
         // 入力画像のリサイズ
         BufferedImage resizedInputImage = resizeImage(inputImage, WIDTH, HEIGHT);
 
-        // 画像を輝度+RGBの成分に分解する
-        int[] inputImageVector = extractBrightnessVector(resizedInputImage);
+        // 画像をベクトルに変換
+        int[] inputImageVector = convert2Vector(resizedInputImage);
 
         // 類似度が高い画像n枚のインデックスを計算する
         int[] idx = searchNearVectors(inputImageVector, imageVectors);
@@ -82,36 +82,33 @@ public class Guesser {
     public List<BufferedImage> getResizedImages(List<BufferedImage> images, int w, int h) {
         List<BufferedImage> resizedImages = new ArrayList<>();
         for (BufferedImage image : images) {
-            image = resizeImage(image, w, h);
-            resizedImages.add(image);
+            // データセットの画像の左右の余白をトリミングする
+            BufferedImage trimmedImage = image.getSubimage(10, 8, image.getWidth() - 20, image.getHeight() - 16);
+            trimmedImage = resizeImage(trimmedImage, w, h);
+            resizedImages.add(trimmedImage);
         }
         return resizedImages;
     }
 
     public BufferedImage resizeImage(BufferedImage image, int w, int h) {
-        // 元の画像の左右の余白をトリミングする
-        BufferedImage trimmedImage = image.getSubimage(10, 8, image.getWidth() - 20,
-                image.getHeight() - 16);
         BufferedImage outputImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-
         Graphics2D g = outputImage.createGraphics();
-        g.drawImage(trimmedImage, 0, 0, w, h, null);
+        g.drawImage(image, 0, 0, w, h, null);
         g.dispose();
-
         return outputImage;
     }
 
     // BufferdImageをRGBと輝度の成分に変換する
-    public List<int[]> extractBrightnessVector(List<BufferedImage> images) {
+    public List<int[]> convert2Vector(List<BufferedImage> images) {
         List<int[]> vectors = new ArrayList<>();
         for (BufferedImage image : images) {
-            vectors.add(extractBrightnessVector(image));
+            vectors.add(convert2Vector(image));
         }
         return vectors;
     }
 
-    public int[] extractBrightnessVector(BufferedImage image) {
-        int[] vectors = new int[WIDTH * HEIGHT * 4];
+    public int[] convert2Vector(BufferedImage image) {
+        int[] vectors = new int[WIDTH * HEIGHT * 3];
 
         int index = 0;
         for (int y = 0; y < HEIGHT; y++) {
@@ -121,7 +118,7 @@ public class Guesser {
                 int g = color.getGreen();
                 int b = color.getBlue();
                 // 輝度
-                vectors[index++] = (int) (0.299 * r + 0.587 * g + 0.114 * b);
+                // vectors[index++] = (int) (0.299 * r + 0.587 * g + 0.114 * b);
                 // RGB
                 vectors[index++] = r;
                 vectors[index++] = g;

@@ -14,14 +14,6 @@ public class MyHendecagon extends MyDrawing {
         super(); // デフォルト値を代入
     }
 
-    public MyHendecagon(int xpt, int ypt, int width, int height) {
-        super(xpt, ypt, width, height);
-    }
-
-    // 本番用
-    public MyHendecagon(int xpt, int ypt, int width, Color lineColor, Color fillColor) {
-        super(xpt, ypt, width, 0, lineColor, fillColor);
-    }
 
     @Override
     void paint(Graphics2D g, int x, int y, int w, int h, Color lineColor, Color fillColor) {

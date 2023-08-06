@@ -1,13 +1,12 @@
 package myapp.components.comboboxes;
 
 import javax.swing.*;
-
-import myapp.states.StateManager;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import myapp.canvas.Mediator;
+import myapp.states.StateManager;
+
 
 public class DropShadowComboBox extends JComboBox<String> {
     StateManager stateManager;

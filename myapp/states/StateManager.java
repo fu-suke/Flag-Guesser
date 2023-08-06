@@ -20,7 +20,7 @@ public class StateManager implements Observable {
     private List<Observer> observers = new ArrayList<>(); // 観察対象のリスト
 
     public StateManager(MyCanvas canvas) {
-        state = new RectState(this);
+        state = new DrawState(this);
         lastState = state;
         this.canvas = canvas;
         hasShadow = false;

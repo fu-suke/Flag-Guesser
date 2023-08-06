@@ -4,19 +4,6 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 public class MyOval extends MyDrawing {
-    public MyOval() {
-        super(); // デフォルト値を代入
-    }
-
-    public MyOval(int xpt, int ypt, int width, int height) {
-        super(xpt, ypt, width, height);
-    }
-
-    public MyOval(int xpt, int ypt, int width, int height,
-            Color lineColor, Color fillColor) {
-        super(xpt, ypt, width, height, lineColor, fillColor);
-    }
-
     @Override
     void paint(Graphics2D g, int x, int y, int w, int h, Color lineColor, Color fillColor) {
         g.setStroke(getStroke());

@@ -1,12 +1,28 @@
 package myapp.states;
 
 import myapp.shapes.MyDrawing;
+import myapp.shapes.MyRectangle;
 
-public abstract class DrawState extends State {
+public class DrawState extends State {
+    MyDrawing drawing;
     MyDrawing currentDrawing;
 
+    // 最初の1回だけ呼ばれる
     public DrawState(StateManager stateManager) {
         super(stateManager);
+        this.drawing = new MyRectangle();
+    }
+
+    // 2回目以降はこっちが呼ばれる
+    public DrawState(StateManager stateManager, MyDrawing drawing) {
+        super(stateManager);
+        this.drawing = drawing;
+    }
+
+    @Override
+    public void mouseDown(int x, int y) {
+        currentDrawing = drawing.clone();
+        setProperties(x, y); // (x,y) に大きさがゼロのインスタンスを作る
     }
 
     @Override
@@ -28,13 +44,14 @@ public abstract class DrawState extends State {
 
     // 描画処理を初期化する
     // StateManagerから図形のプロパティを取得して、図形に反映させる
-    public void setProperties() {
+    public void setProperties(int x, int y) {
+        currentDrawing.setLocation(x, y);
+        currentDrawing.setSize(0, 0);
         currentDrawing.sethasShadow(stateManager.gethasShadow());
         currentDrawing.setStroke(stateManager.getStroke());
         currentDrawing.setLineMultiplicity(stateManager.getlineMultiplicity());
         currentDrawing.setColor(stateManager.getLineColor(), stateManager.getFillColor());
         currentDrawing.setAlpha(stateManager.getAlpha());
-
         stateManager.getCanvas().getMediator().addDrawing(currentDrawing);
     }
 }

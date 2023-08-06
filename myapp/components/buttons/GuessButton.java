@@ -26,7 +26,6 @@ public class GuessButton extends JButton {
         stateManager.notifyObservers();
 
         JPopupMenu popupMenu = new JPopupMenu();
-
         int i = 1;
         for (Map.Entry<String, BufferedImage> entry : result_map.entrySet()) {
             ImageIcon imageIcon = new ImageIcon(entry.getValue());
@@ -36,7 +35,6 @@ public class GuessButton extends JButton {
             popupMenu.add(menuItem);
             i++;
         }
-
         JPanel canvas = stateManager.getCanvas();
         // 画像を表示する
         popupMenu.show(canvas, canvas.getWidth(), 0);
@@ -46,7 +44,6 @@ public class GuessButton extends JButton {
         public void actionPerformed(ActionEvent e) {
             // Canvasからストリームを取得する
             BufferedImage image = stateManager.getCanvas().getCanvasContent();
-
             // Guesserに画像を渡して、結果を受け取る
             Map<String, BufferedImage> results = guesser.guess(image);
             displayImagesInPopupMenu(results);

@@ -6,11 +6,13 @@ import java.util.*;
 import java.util.List;
 
 public abstract class MyDrawing implements Cloneable, Serializable {
-    private int x, y, w, h; // wは横幅、h縦幅
-    private Color lineColor, fillColor; // 線の色と塗りつぶしの色
-    private boolean hasShadow; // 影をつけるかどうか
-    private SerializableBasicStroke stroke; // 線種
-    private int lineMultiplicity; // n重線
+    private int x, y, w, h = 0; // wは横幅、h縦幅
+    private Color lineColor = Color.BLACK;
+    private Color fillColor = Color.WHITE; // 線の色と塗りつぶしの色
+    private boolean hasShadow = false; // 影をつけるかどうか
+    // BasicStrokeクラスはイミュータブル（一度インスタンスを生成したら、属性を変更できない）なので注意
+    private SerializableBasicStroke stroke = new SerializableBasicStroke();; // 線種
+    private int lineMultiplicity = 1; // n重線
     private transient boolean isSelected = false; // 選択状態は保存しない
     Shape region; // 図形の領域
     final int SIZE = 10; // 選択表示のための四角形のサイズ
@@ -20,28 +22,13 @@ public abstract class MyDrawing implements Cloneable, Serializable {
 
     // 引数がないときはデフォルトの値を設定する
     public MyDrawing() {
-        x = y = 100;
-        w = h = 100;
-        lineColor = Color.BLACK;
-        fillColor = Color.WHITE;
-        hasShadow = false;
-        // BasicStrokeクラスはイミュータブル（一度インスタンスを生成したら、属性を変更できない）なので注意
-        stroke = new SerializableBasicStroke();
-        lineMultiplicity = 1;
-        isSelected = false;
         setRegion(); // 領域を設定する;
     }
 
-    public MyDrawing(int xpt, int ypt, int width, int height) {
-        this();
-        setLocation(xpt, ypt);
-        setSize(width, height);
-        setRegion(); // 領域を設定する
-    }
-
-    public MyDrawing(int xpt, int ypt, int width, int height, Color lineColor, Color fillColor) {
-        this(xpt, ypt, width, height);
-        setColor(lineColor, fillColor);
+    public MyDrawing(int x, int y, int w, int h) {
+        setLocation(x, y);
+        setSize(w, h);
+        setRegion(); // 領域を設定する;
     }
 
     public void draw(Graphics g) {
@@ -100,7 +87,6 @@ public abstract class MyDrawing implements Cloneable, Serializable {
             y += h;
             h *= -1;
         }
-
         return new int[] { x, y, w, h };
     }
 

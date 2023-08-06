@@ -3,7 +3,6 @@ package myapp.canvas;
 import java.awt.event.*;
 import myapp.states.*;
 
-// マウスの動きを取得するためのクラス
 class MyMouseAdapter extends MouseAdapter {
     private int lastX = 0;
     private int lastY = 0;

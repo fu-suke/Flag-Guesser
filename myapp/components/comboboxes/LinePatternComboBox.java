@@ -19,16 +19,14 @@ public class LinePatternComboBox extends JComboBox<StrokeString> {
                 BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f }, 0.0f));
         StrokeString pattern3 = new StrokeString("─・─", new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f, 2.0f, 10.0f }, 0.0f));
+        // 線種を追加したい場合はここに追加する
 
         this.addItem(solid);
         this.addItem(pattern2);
         this.addItem(pattern1);
         this.addItem(pattern3);
-        // 線種を追加したい場合はここに追加する
 
         this.setPrototypeDisplayValue(solid);// 一番長い文字列を基準に幅を決める
-
-        // アクションリスナーを追加
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,6 +65,7 @@ public class LinePatternComboBox extends JComboBox<StrokeString> {
     }
 }
 
+// JComboBoxに表示するためにtoString()メソッドを用意する
 class StrokeString {
     private String string;
     private BasicStroke stroke;

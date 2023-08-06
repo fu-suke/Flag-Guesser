@@ -3,22 +3,21 @@ package myapp.states;
 import java.awt.BasicStroke;
 import java.awt.Color;
 
-import myapp.shapes.MyDrawing;
 import myapp.shapes.MyRectangle;
 import myapp.canvas.Mediator;
 
 public class SelectState extends State {
     private MyRectangle selectRect = null; // 範囲選択用の四角形
     private MyRectangle trashRect = null; // ゴミ箱用の四角形
-    private int startX, startY; // ドラッグ開始時のマウスの位置
+    private int lastX, lastY; // 1つ前のマウスの位置
 
     public SelectState(StateManager stateManager) {
         super(stateManager);
     }
 
     public void mouseDown(int x, int y) {
-        startX = x;
-        startY = y;
+        lastX = x;
+        lastY = y;
 
         // マウスクリックされた位置にある図形を選択する
         Mediator mediator = stateManager.getCanvas().getMediator();
@@ -26,31 +25,17 @@ public class SelectState extends State {
 
         // 選択した図形がなければ、選択範囲を作る
         if (mediator.getSelectedDrawings().isEmpty()) {
-            selectRect = new MyRectangle(x, y, 0, 0);
-            // 点線の線種を設定する
-            selectRect.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
-                    BasicStroke.JOIN_MITER, 1.0f, new float[] { 5.0f }, 0.0f));
-            // 塗り色を透明にする
-            selectRect.setfillColor(new Color(0, 0, 0, 0));
-            selectRect.setAlpha(0);
-
-            mediator.addDrawing(selectRect);
+            createSelectRect(x, y);
         } else {
-            // リサイズモードかどうかを判定する。
-            // クリックした位置にリサイズ用の矩形があれば、リサイズモードになる
             mediator.searchResizeRect(x, y);
+            mediator.createGuideLines();
 
             // リサイズモードでない（＝ドラッグモードのとき）
             if (!mediator.isResizeMode()) {
-                // ガイドラインを作る
-                mediator.createGuideLines();
-                stateManager.notifyObservers();
-
                 // ゴミ箱を作る
                 createTrashRect();
             }
         }
-        mediator.repaint();
     }
 
     public void mouseDrag(int x, int y) {
@@ -61,9 +46,9 @@ public class SelectState extends State {
             mediator.setSelectedInRect(selectRect);
 
         } else { // 既に選択されている図形があるとき
-            int dx = x - startX;
-            int dy = y - startY;
-            mediator.dragOrResize(dx, dy);
+            int dx = x - lastX;
+            int dy = y - lastY;
+            mediator.mouseDrag(dx, dy);
             // ゴミ箱の色を変える
             if (trashRect != null) {
                 if (trashRect.contains(x, y)) {
@@ -73,8 +58,8 @@ public class SelectState extends State {
                 }
             }
         }
-        startX = x;
-        startY = y;
+        lastX = x;
+        lastY = y;
     }
 
     public void mouseUp(int x, int y) {
@@ -95,11 +80,23 @@ public class SelectState extends State {
         }
         // リサイズした図形のパラメータを正の値に直す
         if (mediator.isResizeMode()) {
-            for (MyDrawing d : mediator.getSelectedDrawings()) {
-                d.setAdjustedParams();
-            }
+            mediator.normalizeDrawings();
         }
         mediator.clearGuideLines();
+    }
+
+    private void createSelectRect(int x, int y) {
+        selectRect = new MyRectangle(x, y, 0, 0);
+        // 点線の線種を設定する
+        selectRect.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER, 1.0f, new float[] { 5.0f }, 0.0f));
+        // 塗り色を透明にする
+        selectRect.setfillColor(new Color(0, 0, 0, 0));
+        selectRect.setAlpha(0);
+
+        // キャンバスに追加する
+        Mediator mediator = stateManager.getCanvas().getMediator();
+        mediator.addDrawing(selectRect);
     }
 
     // ゴミ箱用の四角形をキャンバスの右下に作る

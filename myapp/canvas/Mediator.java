@@ -9,8 +9,7 @@ import myapp.states.StateManager;
 
 // drawings、および現在選択されている図形に対して操作を行うクラス
 public class Mediator {
-    private List<MyDrawing> drawings;
-
+    private List<MyDrawing> drawings = new ArrayList<>();
     private List<MyDrawing> guideLines = new ArrayList<>();
     private MyCanvas canvas;
     private List<MyDrawing> selectedDrawings = new ArrayList<>();
@@ -20,7 +19,6 @@ public class Mediator {
 
     public Mediator(MyCanvas canvas) {
         this.canvas = canvas;
-        drawings = new ArrayList<>();
     }
 
     /* 上下に移動機能に関連する関数たち */
@@ -48,12 +46,19 @@ public class Mediator {
     /* 補助線機能に関連する関数たち */
 
     public void createGuideLines() {
-        // 選択状態以外の図形の中心に、ガイドラインを作る
+        // 選択状態以外の図形の中心と角にガイドラインを作る
         guideLines.clear();
         for (MyDrawing d : drawings) {
             if (d.isSelected()) {
                 continue;
             }
+            // 四隅
+            int[] edge = d.getEdge();
+            guideLines.add(new MyLine(edge[0], edge[1], 0, 0)); // タテ用
+            guideLines.add(new MyLine(edge[0], edge[1], 0, 0)); // ヨコ用
+            guideLines.add(new MyLine(edge[2], edge[3], 0, 0)); // タテ用
+            guideLines.add(new MyLine(edge[2], edge[3], 0, 0)); // ヨコ用
+            // 中心
             int[] center = d.getCenter();
             guideLines.add(new MyLine(center[0], center[1], 0, 0)); // タテ用
             guideLines.add(new MyLine(center[0], center[1], 0, 0)); // ヨコ用
@@ -64,54 +69,72 @@ public class Mediator {
         return guideLines;
     }
 
+    // 図形をドラッグしている最中のガイドラインの表示
     public void displayGuideLines() {
         // 一度ガイドラインをリセットする
         resetGuideLines();
 
         // ドラッグ中の図形とガイドラインの中心が重なっているかどうかを判定する
-        for (int i = 0; i < guideLines.size(); i += 2) {
+        for (int i = 0; i < guideLines.size();) {
             // 垂直方向の線は偶数インデックス、水平方向の線は奇数インデックスに保存されている
-            MyLine verticalLine = (MyLine) guideLines.get(i);
-            MyLine horizontalLine = (MyLine) guideLines.get(i + 1);
-            int[] v_line_center = verticalLine.getCenter();
-            int[] h_line_center = horizontalLine.getCenter();
+            MyLine verticalLine = (MyLine) guideLines.get(i++);
+            MyLine horizontalLine = (MyLine) guideLines.get(i++);
 
-            for (MyDrawing d : drawings) {
-                // 選択状態以外の図形は無視する
-                if (!d.isSelected()) {
-                    continue;
-                }
-                // ドラッグ中の図形の中心が重なっているかをチェック
-                int[] d_center = d.getCenter();
-                boolean isXMatched = isInRange(d_center[0], v_line_center[0]);
+            // 垂直方向の線を調べる
+            adjustX(verticalLine);
 
-                if (isXMatched) {
-                    verticalLine.setSize(0, 9999);
-                    d.setLocation(v_line_center[0] - d.getW() / 2, d.getY());
-                    break;
-                }
+            // 水平方向の線を調べる
+            adjustY(horizontalLine);
+        }
+    }
+
+    private void adjustX(MyLine line) {
+        int x = line.getX();
+        for (MyDrawing d : drawings) {
+            // 選択状態以外の図形は無視する
+            if (!d.isSelected()) {
+                continue;
             }
-
-            for (MyDrawing d : drawings) {
-                // 選択状態以外の図形は無視する
-                if (!d.isSelected()) {
-                    continue;
+            // 引数のxと、非選択状態の図形d
+            int[] d_center = d.getCenter();
+            boolean isXMatched = isInRange(d_center[0], x);
+            // x座標が重なっているなら、垂直方向の線を表示する
+            if (isXMatched) {
+                line.setSize(0, 9999);
+                d.setLocation(x - d.getW() / 2, d.getY());
+                // 図形がずっと引っ張られるのを防止するために少し待つ
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
                 }
-                // ドラッグ中の図形の中心が重なっているかをチェック
-                int[] d_center = d.getCenter();
-                boolean isYMatched = isInRange(d_center[1], h_line_center[1]);
+                break;
+            }
+        }
+    }
 
-                if (isYMatched) {
-                    horizontalLine.setSize(9999, 0);
-                    d.setLocation(d.getX(), h_line_center[1] - d.getH() / 2);
-                    break;
+    private void adjustY(MyLine line) {
+        int y = line.getY();
+        for (MyDrawing d : drawings) {
+            if (!d.isSelected()) {
+                continue;
+            }
+            int[] d_center = d.getCenter();
+            boolean isYMatched = isInRange(d_center[1], y);
+
+            if (isYMatched) {
+                line.setSize(9999, 0);
+                d.setLocation(d.getX(), y - d.getH() / 2);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
                 }
+                break;
             }
         }
     }
 
     private boolean isInRange(int target, int center) {
-        return center - 10 <= target && target <= center + 10;
+        return center - 2 <= target && target <= center + 2;
     }
 
     private void resetGuideLines() {
@@ -142,15 +165,15 @@ public class Mediator {
         return this.resizeMode != -1;
     }
 
-    public void dragOrResize(int dx, int dy) {
-        // 選択図形が1つかつ、リサイズモードのとき
-        if (this.resizeMode != -1) {
+    public void mouseDrag(int dx, int dy) {
+        // リサイズモードのとき
+        if (this.isResizeMode()) {
             // 選択状態の図形のリサイズ
             for (MyDrawing d : selectedDrawings) {
                 d.resize(dx, dy, resizeMode);
             }
         }
-        // 選択図形が複数か、リサイズモードでないとき
+        // リサイズモードでないとき
         else {
             // 選択状態の図形を動かす
             for (MyDrawing d : selectedDrawings) {
@@ -318,7 +341,6 @@ public class Mediator {
             // クリックされた座標にリサイズ用の■があるなら
             int idx = d.containsResizeRect(x, y);
             if (idx != -1) {
-                // 何もせず処理を終了する
                 return;
             }
             if (d.contains(x, y)) { // クリックされた座標に図形があるなら
@@ -370,12 +392,14 @@ public class Mediator {
         rect.setSelected(false);
     }
 
-    public void setStateManager(StateManager stateManager) {
-        this.stateManager = stateManager;
+    public void normalizeDrawings() {
+        for (MyDrawing d : selectedDrawings) {
+            d.setAdjustedParams();
+        }
     }
 
-    public StateManager getStateManager() {
-        return stateManager;
+    public void setStateManager(StateManager stateManager) {
+        this.stateManager = stateManager;
     }
 
     public MyCanvas getCanvas() {

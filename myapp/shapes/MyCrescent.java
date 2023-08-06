@@ -1,12 +1,8 @@
 package myapp.shapes;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.geom.Area;
+import java.awt.*;
 
 public class MyCrescent extends MyDrawing {
     private final int N = 360;
@@ -15,15 +11,6 @@ public class MyCrescent extends MyDrawing {
 
     public MyCrescent() {
         super(); // デフォルト値を代入
-    }
-
-    public MyCrescent(int xpt, int ypt, int width, int height) {
-        super(xpt, ypt, width, height);
-    }
-
-    public MyCrescent(int xpt, int ypt, int width, int height,
-            Color lineColor, Color fillColor) {
-        super(xpt, ypt, width, height, lineColor, fillColor);
     }
 
     @Override
@@ -222,19 +209,10 @@ public class MyCrescent extends MyDrawing {
         int y = params[1];
         int w = params[2];
         int h = params[3];
-        region = new Ellipse2D.Float(x, y, w, h);
-
-        // 円範囲の定義
-        Ellipse2D outerCircle = new Ellipse2D.Double(x, y, w, h);
-        Ellipse2D innerCircle = new Ellipse2D.Double(inner_x, inner_y, inner_w, inner_h);
-
-        // 外側と内側の円のAreaを作成
-        Area outerArea = new Area(outerCircle);
-        Area innerArea = new Area(innerCircle);
-
-        // 外側の円から内側の円の部分を引く
-        outerArea.subtract(innerArea);
-        this.region = outerArea;
+        List<int[]> points = calculatePolygonPoints(x, y, w, h);
+        int[] xPoints = points.get(0);
+        int[] yPoints = points.get(1);
+        region = new Polygon(xPoints, yPoints, xPoints.length);
     }
 
     @Override

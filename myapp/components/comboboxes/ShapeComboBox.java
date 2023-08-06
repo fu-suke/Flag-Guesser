@@ -4,20 +4,21 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import myapp.states.*;
+import myapp.shapes.*;
 
 public class ShapeComboBox extends JComboBox<ShapeString> {
     StateManager stateManager;
 
     public ShapeComboBox(StateManager stateManager) {
         this.stateManager = stateManager;
-        ShapeString rect = new ShapeString("四角", new RectState(stateManager));
-        ShapeString triangle = new ShapeString("三角", new TriangleState(stateManager));
-        ShapeString oval = new ShapeString("楕円", new OvalState(stateManager));
-        ShapeString crescent = new ShapeString("三日月", new CrescentState(stateManager));
-        ShapeString star = new ShapeString("星", new StarState(stateManager));
-        // ShapeString hendecagon = new ShapeString("11角形", new
-        // HendecagonState(stateManager));
-        ShapeString diagonal = new ShapeString("陣", new DiagonalPolygonState(stateManager));
+        ShapeString rect = new ShapeString("四角", new DrawState(stateManager, new MyRectangle()));
+        ShapeString triangle = new ShapeString("三角", new DrawState(stateManager, new MyTriangle()));
+        ShapeString oval = new ShapeString("楕円", new DrawState(stateManager, new MyOval()));
+        ShapeString crescent = new ShapeString("三日月", new DrawState(stateManager, new MyCrescent()));
+        ShapeString star = new ShapeString("星", new DrawState(stateManager, new MyStar()));
+        // ShapeString hendecagon = new ShapeString("十一角形", new DrawState(stateManager,
+        // new MyHendecagon()));
+        ShapeString diagonal = new ShapeString("対角線", new DrawState(stateManager, new MyDiagonalPolygon()));
 
         // コンボボックスの幅を変更
         this.setPrototypeDisplayValue(crescent);// 一番長い文字列を基準に幅を決める

@@ -4,16 +4,11 @@ import java.awt.*;
 
 public class MyRectangle extends MyDrawing {
     public MyRectangle() {
-        super(); // デフォルト値を代入
+        super();
     }
 
-    public MyRectangle(int xpt, int ypt, int width, int height) {
-        super(xpt, ypt, width, height);
-    }
-
-    public MyRectangle(int xpt, int ypt, int width, int height,
-            Color lineColor, Color fillColor) {
-        super(xpt, ypt, width, height, lineColor, fillColor);
+    public MyRectangle(int xpt, int ypt, int w, int h) {
+        super(xpt, ypt, w, h);
     }
 
     void paint(Graphics2D g, int x, int y, int w, int h, Color lineColor, Color fillColor) {

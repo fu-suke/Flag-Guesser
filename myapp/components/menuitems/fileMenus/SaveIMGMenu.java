@@ -21,7 +21,6 @@ public class SaveIMGMenu extends JMenuItem {
 
         public void actionPerformed(ActionEvent e) {
             BufferedImage image = stateManager.getCanvas().getCanvasContent();
-            // BufferedImage image = stateManager.getCanvas().getResizedImage(400, 400);
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();

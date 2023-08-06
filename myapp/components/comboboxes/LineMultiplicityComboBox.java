@@ -21,7 +21,6 @@ public class LineMultiplicityComboBox extends JComboBox<Integer> {
             this.addItem(number);
         }
         this.stateManager = stateManager;
-
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -10,20 +10,6 @@ public class MyTriangle extends MyDrawing {
     final int N = 3; // 頂点の数
     private int mode = -1; // -1: 初期化状態、0: 右下ドラッグ、1: 右上、2: 左下、3: 左上ドラッグ
 
-    // テスト用
-    public MyTriangle() {
-        super(); // デフォルト値を代入
-    }
-
-    public MyTriangle(int xpt, int ypt, int width, int height) {
-        super(xpt, ypt, width, height);
-    }
-
-    // 本番用
-    public MyTriangle(int xpt, int ypt, int width, Color lineColor, Color fillColor) {
-        super(xpt, ypt, width, 0, lineColor, fillColor);
-    }
-
     @Override
     void paint(Graphics2D g, int x, int y, int w, int h, Color lineColor, Color fillColor) {
         // n角形の頂点の座標を計算する

@@ -58,10 +58,8 @@ public class MyCanvas extends JPanel implements Observer {
 
     // キャンバスの内容を画像として返す
     public BufferedImage getCanvasContent() {
-        int width = getWidth();
-        int height = getHeight();
         // TYPE_INT_RGBは、sRGBカラーモデルを使用したRGB形式
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         this.paint(g);
         g.dispose();
@@ -71,32 +69,28 @@ public class MyCanvas extends JPanel implements Observer {
     class MyKeyAdapter extends KeyAdapter {
 
         public void keyPressed(KeyEvent e) {
-            mediator.getStateManager().setSelectState();
+            stateManager.setSelectState();
             // "Del"キーが押されたときの処理
             if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                 mediator.delete();
-                stateManager.notifyObservers();
             }
             // "Ctrl+C"
             if (e.getKeyCode() == KeyEvent.VK_C && e.isControlDown()) {
                 mediator.copy();
-                stateManager.notifyObservers();
             }
             // "Ctrl+V"
             if (e.getKeyCode() == KeyEvent.VK_V && e.isControlDown()) {
                 mediator.paste(mouseAdapter.getLastX(), mouseAdapter.getLastY());
-                stateManager.notifyObservers();
             }
             // "Ctrl+X"
             if (e.getKeyCode() == KeyEvent.VK_X && e.isControlDown()) {
                 mediator.cut();
-                stateManager.notifyObservers();
             }
             // "Ctrl+A"
             if (e.getKeyCode() == KeyEvent.VK_A && e.isControlDown()) {
                 mediator.selectAll();
-                stateManager.notifyObservers();
             }
+            stateManager.notifyObservers();
         }
     }
 }
