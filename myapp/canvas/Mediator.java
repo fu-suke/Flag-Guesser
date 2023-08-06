@@ -52,12 +52,6 @@ public class Mediator {
             if (d.isSelected()) {
                 continue;
             }
-            // 四隅
-            int[] edge = d.getEdge();
-            guideLines.add(new MyLine(edge[0], edge[1], 0, 0)); // タテ用
-            guideLines.add(new MyLine(edge[0], edge[1], 0, 0)); // ヨコ用
-            guideLines.add(new MyLine(edge[2], edge[3], 0, 0)); // タテ用
-            guideLines.add(new MyLine(edge[2], edge[3], 0, 0)); // ヨコ用
             // 中心
             int[] center = d.getCenter();
             guideLines.add(new MyLine(center[0], center[1], 0, 0)); // タテ用
